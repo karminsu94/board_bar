@@ -1,7 +1,7 @@
 class Player {
   String name;
   int score;
-  List<int> scoreDetail = [];
+  List<String> scoreDetail = [];
 
   Player({required this.name, required this.score});
 

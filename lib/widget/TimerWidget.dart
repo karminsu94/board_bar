@@ -47,26 +47,25 @@ class _TimerWidgetState extends State<TimerWidget> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          Icons.timer_sharp,
-          size: 50.sp,
-        ),
         Text(
           Duration(seconds: _seconds).toString().split('.').first,
           style: GoogleFonts.pressStart2p(
             fontWeight: FontWeight.w300,
             fontSize: 23.sp,
-            // color: const Color(0xfff5ddaf)
+            color: Colors.white70
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: Icon(_isRunning ? Icons.pause_circle_outline_rounded : Icons.play_circle_outline_rounded),
+              icon: Icon(_isRunning
+                  ? Icons.pause_circle_outline_rounded
+                  : Icons.play_circle_outline_rounded),
               iconSize: 30.sp,
+              color: const Color(0xff000000),
               onPressed: () {
                 if (_isRunning) {
                   _pauseTimer();
@@ -76,6 +75,22 @@ class _TimerWidgetState extends State<TimerWidget> {
               },
             ),
           ],
+          // children: [
+          //   GestureDetector(
+          //     child: Text(_isRunning?"⏸️":"▶️",
+          //         style: GoogleFonts.pressStart2p(
+          //             fontWeight: FontWeight.w300,
+          //             fontSize: 23.sp,
+          //             color: const Color(0xff000000))),
+          //     onTap: () {
+          //       if (_isRunning) {
+          //         _pauseTimer();
+          //       } else {
+          //         _startTimer();
+          //       }
+          //     },
+          //   ),
+          // ],
         ),
       ],
     );

@@ -3,6 +3,7 @@ import 'package:board_bar/widget/BasicCounterCard.dart';
 import 'package:board_bar/widget/TimerWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BasicCounter extends StatefulWidget {
   @override
@@ -31,19 +32,22 @@ class _BasicCounterState extends State<BasicCounter> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xfff9e0b2),
-      appBar: AppBar(
-        title: Text('Basic Counter'),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TimerWidget(),
-
-            BasicCounterCard(playerName: "April", score: 99),
-            BasicCounterCard(playerName: "Lucy", score: 99),
-            BasicCounterCard(playerName: "Bruce", score: 99),
-            BasicCounterCard(playerName: "Urine", score: 99)
+            Container(
+                decoration: BoxDecoration(
+                    border:Border.all(color: Color(0xff233c4c),width: 8.w),
+                  color:  Color(0xff326171)
+                ),
+                margin: EdgeInsets.only(bottom: 25.h),
+                width: 250.w,
+                child: TimerWidget()),
+            BasicCounterCard(playerName: "April", score: 99,scoreDetail: [],),
+            BasicCounterCard(playerName: "Lucy", score: 99,scoreDetail: [],),
+            BasicCounterCard(playerName: "Bruce", score: 99,scoreDetail: [],),
+            BasicCounterCard(playerName: "Urine", score: 99,scoreDetail: [],)
           ],
         ),
       ),
