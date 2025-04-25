@@ -51,7 +51,9 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                       // borderRadius: BorderRadius.circular(10),
                       ),
                   child: ListView.builder(
-                    itemCount: widget.scoreDetail.length > 9 ? 9 : widget.scoreDetail.length, // 固定最多显示9个
+                    itemCount: widget.scoreDetail.length > 9
+                        ? 9
+                        : widget.scoreDetail.length, // 固定最多显示9个
                     itemBuilder: (context, index) {
                       // 如果列表长度大于9，显示最后的9个
                       final displayIndex = widget.scoreDetail.length > 9
@@ -150,13 +152,13 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                       // 检测上滑操作
                       setState(() {
                         // 如果scoreDetail不为空，才允许上滑
-                        if(widget.scoreDetail.isNotEmpty) {
-                          int latestValue = int.parse(widget.scoreDetail[widget.scoreDetail.length - 1]);
+                        if (widget.scoreDetail.isNotEmpty) {
+                          int latestValue = int.parse(widget
+                              .scoreDetail[widget.scoreDetail.length - 1]);
                           widget.score = widget.score - latestValue;
                           widget.scoreDetail.removeLast();
                           _hasSwipedUp = true;
                         }
-
                       });
                     }
                   },
@@ -167,12 +169,18 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                   onLongPress: () {
                     showModalBottomSheet(
                       context: context,
+                      isScrollControlled: true,
                       builder: (BuildContext context) {
-                        return SimpleCalculator(score: widget.score,scoreDetail: widget.scoreDetail,);
+                        return FractionallySizedBox(
+                          heightFactor: 0.8, // 设置高度为屏幕的80%
+                          child: SimpleCalculator(
+                            score: widget.score,
+                            scoreDetail: widget.scoreDetail,
+                          ),
+                        );
                       },
                     );
                   },
-
                   child: Container(
                     width: 280.w,
                     color: Colors.transparent,

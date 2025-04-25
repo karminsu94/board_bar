@@ -10,8 +10,10 @@ class TimerWidget extends StatefulWidget {
 
 class _TimerWidgetState extends State<TimerWidget> {
   late Timer _timer;
+  late Timer _colonTimer;
   int _seconds = 0;
   bool _isRunning = false;
+  bool _showColon = true;
 
   void _startTimer() {
     if (!_isRunning) {
@@ -20,8 +22,12 @@ class _TimerWidgetState extends State<TimerWidget> {
           _seconds++;
         });
       });
+
+      _colonTimer.cancel();
+
       setState(() {
         _isRunning = true;
+        _showColon = true;
       });
     }
   }
@@ -29,6 +35,13 @@ class _TimerWidgetState extends State<TimerWidget> {
   void _pauseTimer() {
     if (_isRunning) {
       _timer.cancel();
+
+      _colonTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+        setState(() {
+          _showColon = !_showColon;
+        });
+      });
+
       setState(() {
         _isRunning = false;
       });
@@ -36,9 +49,21 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _colonTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        _showColon = !_showColon;
+      });
+    });
+  }
+
+  @override
   void dispose() {
     if (_isRunning) {
       _timer.cancel();
+      _colonTimer.cancel();
     }
     super.dispose();
   }
@@ -50,11 +75,17 @@ class _TimerWidgetState extends State<TimerWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          Duration(seconds: _seconds).toString().split('.').first,
+          _showColon
+              ? Duration(seconds: _seconds).toString().split('.').first
+              : Duration(seconds: _seconds)
+                  .toString()
+                  .split('.')
+                  .first
+                  .replaceAll(':', ' '),
           style: GoogleFonts.pressStart2p(
             fontWeight: FontWeight.w300,
             fontSize: 23.sp,
-            color: Colors.white70
+            color: Colors.white70,
           ),
         ),
         Row(
