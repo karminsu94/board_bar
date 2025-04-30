@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,9 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 class SimpleCalculator extends StatefulWidget {
   final int score;
   final List<String> scoreDetail;
+  final Function(int,List<String>) callback;
 
   const SimpleCalculator(
-      {super.key, required this.score, required this.scoreDetail});
+      {super.key, required this.score, required this.scoreDetail, required this.callback});
 
   @override
   _SimpleCalculatorState createState() => _SimpleCalculatorState();
@@ -16,6 +16,7 @@ class SimpleCalculator extends StatefulWidget {
 
 class _SimpleCalculatorState extends State<SimpleCalculator> {
   int _currentInput = 0;
+  String _crurrentProcess = "";
   List<String> _calculationHistory = [];
   late int _currentResult;
 
@@ -29,35 +30,71 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   void _onNumberPressed(int number) {
     setState(() {
       _currentInput = _currentInput * 10 + number;
+      _crurrentProcess += "$number";
     });
   }
 
   void _onOperationPressed(String operation) {
     setState(() {
-      if (operation == "+") {
-        _calculationHistory.add("$_currentInput +");
-        _currentInput = 0;
-      } else if (operation == "-") {
-        _calculationHistory.add("$_currentInput -");
+      if (operation == "+" || operation == "-" || operation == "÷" || operation == "×") {
+        if (_crurrentProcess.isNotEmpty && "+-×÷".contains(_crurrentProcess[_crurrentProcess.length - 1])) {
+          _crurrentProcess = _crurrentProcess.substring(0, _crurrentProcess.length - 1) + operation;
+        } else {
+          _crurrentProcess += operation;
+        }
         _currentInput = 0;
       } else if (operation == "=") {
+        // 计算结果
         int result = 0;
+        List<String> tokens = [];
         String currentOperation = "+";
-        for (String entry in _calculationHistory) {
-          if (entry.endsWith("+") || entry.endsWith("-")) {
-            currentOperation = entry.substring(entry.length - 1);
+
+
+        // 将历史记录// 使用正则表达式将_crurrentProcess转化为操作数和操作符的列表
+        tokens = RegExp(r'(\d+|[+\-×÷])').allMatches(_crurrentProcess).map((e) => e.group(0)!).toList();
+
+        // 使用栈处理先乘除后加减
+        List<int> stack = [];
+        for (int i = 0; i < tokens.length; i++) {
+          String token = tokens[i];
+          if (token == "+" || token == "-") {
+            currentOperation = token;
+          } else if (token == "×" || token == "÷") {
+            int prev = stack.removeLast();
+            int value = int.parse(tokens[++i]);
+            if (token == "×") {
+              stack.add(prev * value);
+            } else if (token == "÷") {
+              stack.add(prev ~/ value); // 整数除法
+            }
           } else {
-            int value = int.parse(entry);
+            int value = int.parse(token);
             if (currentOperation == "+") {
-              result += value;
+              stack.add(value);
             } else if (currentOperation == "-") {
-              result -= value;
+              stack.add(-value);
             }
           }
         }
-        _calculationHistory.add("$_currentInput");
-        _currentInput = result;
+
+        // 计算最终结果
+        result = stack.fold(0, (sum, element) => sum + element);
+
+        // 更新历史记录和回调
+
         _calculationHistory.add("= $result");
+        if(result>=0){
+          widget.scoreDetail.add("+$result");
+        }else{
+          widget.scoreDetail.add("-$result");
+        }
+
+        widget.callback(result, widget.scoreDetail);
+
+        _currentResult = result;
+        _currentInput = 0;
+        _crurrentProcess = "$result";
+        _calculationHistory.clear();
       } else if (operation == "C") {
         _currentInput = 0;
         _calculationHistory.clear();
@@ -104,8 +141,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "$_currentInput",
-                        style: TextStyle(color: Colors.white, fontSize: 36),
+                        _crurrentProcess,
+                        style: GoogleFonts.pressStart2p(
+                            fontSize: 22.sp, color: Colors.black87),
                         textAlign: TextAlign.right,
                       ),
                     ],

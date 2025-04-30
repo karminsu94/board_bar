@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -176,6 +175,12 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                           child: SimpleCalculator(
                             score: widget.score,
                             scoreDetail: widget.scoreDetail,
+                            callback: (int cScore, List<String> cScoreDetail) {
+                              setState(() {
+                                widget.score=cScore;
+                                widget.scoreDetail=cScoreDetail;
+                              });
+                          },
                           ),
                         );
                       },

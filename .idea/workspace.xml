@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5f7cbc8-892f-4f4d-95c4-fb256f664cf3" name="Changes" comment="initial">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widget/BasicCounterCard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widget/BasicCounterCard.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widget/SimpleCalculator.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widget/SimpleCalculator.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widget/TimerWidget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widget/TimerWidget.dart" afterDir="false" />
@@ -102,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745228297471</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="initial">
+      <option name="closed" value="true" />
+      <created>1745572847848</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1745572847848</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

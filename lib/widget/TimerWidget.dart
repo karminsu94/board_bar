@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TimerWidget extends StatefulWidget {
+  const TimerWidget({super.key});
+
   @override
   _TimerWidgetState createState() => _TimerWidgetState();
 }
