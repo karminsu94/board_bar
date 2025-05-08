@@ -34,20 +34,40 @@ class _BasicCounterState extends State<BasicCounter> {
       backgroundColor: const Color(0xfff9e0b2),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-                decoration: BoxDecoration(
-                    border:Border.all(color: Color(0xff233c4c),width: 8.w),
-                  color:  Color(0xff326171)
-                ),
-                margin: EdgeInsets.only(bottom: 25.h),
-                width: 250.w,
-                child: TimerWidget()),
-            BasicCounterCard(playerName: "April", score: 99,scoreDetail: [],),
-            BasicCounterCard(playerName: "Lucy", score: 99,scoreDetail: [],),
-            BasicCounterCard(playerName: "Bruce", score: 99,scoreDetail: [],),
-            BasicCounterCard(playerName: "Urine", score: 99,scoreDetail: [],)
+            Stack(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(color: Color(0xff233c4c), width: 8.w),
+                          color: Color(0xff326171)),
+                      margin: EdgeInsets.only(bottom: 25.h, top: 25.h),
+                      width: 250.w,
+                      child: TimerWidget()),
+                ],
+              ),
+              Positioned(
+                  right: 0,
+                  child: IconButton(
+                      onPressed: null,
+                      icon: Icon(
+                        Icons.add_circle_outline,
+                        size: 50.sp,
+                        color: Color(0xff233c4c),
+                      ))),
+            ]),
+            ..._playerList
+                .map((player) => BasicCounterCard(
+                      playerName: player.name,
+                      score: player.score,
+                      scoreDetail: [],
+                    ))
+                .toList(),
           ],
         ),
       ),

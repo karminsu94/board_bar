@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'FloatingText.dart';
 import 'SimpleCalculator.dart';
 
 class BasicCounterCard extends StatefulWidget {
@@ -23,6 +24,36 @@ class BasicCounterCard extends StatefulWidget {
 class _BasicCounterCardState extends State<BasicCounterCard> {
   bool _hasSwipedDown = false;
   bool _hasSwipedUp = false;
+  bool _hasSwipedLeft = false;
+  OverlayEntry? _overlayEntry;
+
+  void _showFloatingText(BuildContext context, String text, Color color,
+      double fontSize, double positionParma, bool isMovingUp) {
+    final overlay = Overlay.of(context);
+    final renderBox = context.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: isMovingUp
+            ? position.dy
+            : position.dy + renderBox.size.height * 4 / 5,
+        left: position.dx + renderBox.size.width / positionParma,
+        child: FloatingText(
+          text: text,
+          color: color,
+          fontSize: fontSize,
+          isMovingUp: isMovingUp,
+          onComplete: () {
+            _overlayEntry?.remove();
+            _overlayEntry = null;
+          },
+        ),
+      ),
+    );
+
+    overlay.insert(_overlayEntry!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +168,8 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                       widget.score = widget.score + 1;
                       widget.scoreDetail.add("+1");
                     });
+                    _showFloatingText(
+                        context, "+1", Colors.amberAccent, 20.sp, 2.3, true);
                   },
                   onVerticalDragUpdate: (details) {
                     if (details.delta.dy > 0.4 && !_hasSwipedDown) {
@@ -146,24 +179,47 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                         widget.scoreDetail.add("-1");
                         _hasSwipedDown = true;
                       });
+                      _showFloatingText(
+                          context, "-1", Colors.black87, 25.sp, 2.3, false);
                     }
-                    if (details.delta.dy < -0.4 && !_hasSwipedUp) {
-                      // 检测上滑操作
-                      setState(() {
-                        // 如果scoreDetail不为空，才允许上滑
-                        if (widget.scoreDetail.isNotEmpty) {
-                          int latestValue = int.parse(widget
-                              .scoreDetail[widget.scoreDetail.length - 1]);
-                          widget.score = widget.score - latestValue;
-                          widget.scoreDetail.removeLast();
-                          _hasSwipedUp = true;
-                        }
-                      });
-                    }
+                    // if (details.delta.dy < -0.4 && !_hasSwipedUp) {
+                    //   // 检测上滑操作
+                    //   setState(() {
+                    //     // 如果scoreDetail不为空，才允许上滑
+                    //     if (widget.scoreDetail.isNotEmpty) {
+                    //       int latestValue = int.parse(widget
+                    //           .scoreDetail[widget.scoreDetail.length - 1]);
+                    //       widget.score = widget.score - latestValue;
+                    //       widget.scoreDetail.removeLast();
+                    //       _hasSwipedUp = true;
+                    //     }
+                    //   });
+                    // }
                   },
                   onVerticalDragEnd: (details) {
                     _hasSwipedDown = false; // 重置标志，允许下一次下滑操作
                     _hasSwipedUp = false; // 重置标志，允许下一次上滑操作
+                  },
+                  onHorizontalDragUpdate: (details) {
+                    if (details.delta.dx < -0.2 && !_hasSwipedLeft) {
+                      // 检测左滑操作
+                      if (widget.scoreDetail.isNotEmpty) {
+                        setState(() {
+                          // 如果scoreDetail不为空，才允许上滑
+
+                          int latestValue = int.parse(widget
+                              .scoreDetail[widget.scoreDetail.length - 1]);
+                          widget.score = widget.score - latestValue;
+                          widget.scoreDetail.removeLast();
+                          _hasSwipedLeft = true;
+                        });
+                        _showFloatingText(
+                            context, "↩", Colors.white70, 25.sp, 2.3, false);
+                      }
+                    }
+                  },
+                  onHorizontalDragEnd: (details) {
+                    _hasSwipedLeft = false; // 重置标志，允许下一次左滑操作
                   },
                   onLongPress: () {
                     showModalBottomSheet(
@@ -177,10 +233,10 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                             scoreDetail: widget.scoreDetail,
                             callback: (int cScore, List<String> cScoreDetail) {
                               setState(() {
-                                widget.score=cScore;
-                                widget.scoreDetail=cScoreDetail;
+                                widget.score = cScore;
+                                widget.scoreDetail = cScoreDetail;
                               });
-                          },
+                            },
                           ),
                         );
                       },
@@ -223,6 +279,8 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                             widget.score = widget.score + 10;
                             widget.scoreDetail.add("+10");
                           });
+                          _showFloatingText(context, "+10", Colors.yellowAccent,
+                              35.sp, 2.5, true);
                         },
                         child: Container(
                           // padding: EdgeInsets.all(3.w),
@@ -250,6 +308,8 @@ class _BasicCounterCardState extends State<BasicCounterCard> {
                             widget.score = widget.score + 5;
                             widget.scoreDetail.add("+5");
                           });
+                          _showFloatingText(
+                              context, "+5", Colors.yellow, 28.sp, 2.3, true);
                         },
                         child: Container(
                           // padding: EdgeInsets.all(3.w),
