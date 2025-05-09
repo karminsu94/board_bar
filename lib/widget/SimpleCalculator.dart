@@ -25,6 +25,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     super.initState();
     _calculationHistory = widget.scoreDetail;
     _currentResult = widget.score;
+    _currentInput = widget.score;
+    _crurrentProcess = widget.score.toString();
   }
 
   void _onNumberPressed(int number) {
@@ -118,36 +120,34 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               ),
               color: const Color(0xfff5ddaf),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  "$_currentResult",
-                  style: GoogleFonts.pressStart2p(
-                      // fontWeight: FontWeight.w900,
-                      fontSize: 25.sp,
-                      color: Colors.amber),
-                  textAlign: TextAlign.center,
-                ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        _calculationHistory.join("\n"),
-                        style: GoogleFonts.pressStart2p(
-                            fontSize: 8.sp, color: const Color(0xfff5ddaf)),
-                        textAlign: TextAlign.right,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        _crurrentProcess,
-                        style: GoogleFonts.pressStart2p(
-                            fontSize: 22.sp, color: Colors.black87),
-                        textAlign: TextAlign.right,
-                      ),
-                    ],
+                  child: ListView.builder(
+                    itemCount: widget.scoreDetail.length > 5
+                        ? 5
+                        : widget.scoreDetail.length, // 固定最多显示5个
+                    itemBuilder: (context, index) {
+                      // 如果列表长度大于5，显示最后的5个
+                      final displayIndex = widget.scoreDetail.length > 5
+                          ? widget.scoreDetail.length - 5 + index
+                          : index;
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 2.h),
+                        alignment: Alignment.topRight,
+                        child: Text(widget.scoreDetail[displayIndex],
+                            style: GoogleFonts.pressStart2p(
+                                fontSize: 12.sp, color: Colors.black87)),
+                      );
+                    },
                   ),
+                ),
+                Text(
+                  _crurrentProcess,
+                  style: GoogleFonts.pressStart2p(
+                      fontSize: 30.sp, color: Colors.black87),
+                  textAlign: TextAlign.right,
                 ),
               ],
             ),

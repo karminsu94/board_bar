@@ -17,8 +17,8 @@ class _BasicCounterState extends State<BasicCounter> {
   @override
   void initState() {
     // TODO: implement initState
-    _playerList.add(Player(name: "Player 1", score: 0));
-    _playerList.add(Player(name: "Player 2", score: 0));
+    _playerList.add(Player(name: "Player1", score: 0));
+    _playerList.add(Player(name: "Player2", score: 0));
     super.initState();
   }
 
@@ -54,20 +54,57 @@ class _BasicCounterState extends State<BasicCounter> {
               Positioned(
                   right: 0,
                   child: IconButton(
-                      onPressed: null,
+                      onPressed: () async {
+                        String? playerName = await showModalBottomSheet<String>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            String inputName = '';
+                            return Column(
+                              children: [
+                                Text('输入玩家名称'),
+                                TextField(
+                                  onChanged: (value) {
+                                    inputName = value;
+                                  },
+                                  decoration:
+                                      InputDecoration(hintText: '请输入名称'),
+                                ),
+                                TextButton(
+                                  child: Text('确定'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop(inputName);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (playerName != null && playerName.isNotEmpty) {
+                          setState(() {
+                            _playerList.add(Player(name: playerName, score: 0));
+                          });
+                        }
+                      },
                       icon: Icon(
                         Icons.add_circle_outline,
                         size: 50.sp,
                         color: Color(0xff233c4c),
                       ))),
             ]),
-            ..._playerList
-                .map((player) => BasicCounterCard(
-                      playerName: player.name,
-                      score: player.score,
-                      scoreDetail: [],
-                    ))
-                .toList(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _playerList
+                      .map((player) => BasicCounterCard(
+                            playerName: player.name,
+                            score: player.score,
+                            scoreDetail: [],
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
           ],
         ),
       ),
