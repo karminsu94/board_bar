@@ -5,19 +5,26 @@ import 'package:google_fonts/google_fonts.dart';
 class SimpleCalculator extends StatefulWidget {
   final int score;
   final List<String> scoreDetail;
-  final Function(int,List<String>) callback;
+  final Function(int, List<String>) callback;
 
   const SimpleCalculator(
-      {super.key, required this.score, required this.scoreDetail, required this.callback});
+      {super.key,
+      required this.score,
+      required this.scoreDetail,
+      required this.callback});
 
   @override
   _SimpleCalculatorState createState() => _SimpleCalculatorState();
 }
 
 class _SimpleCalculatorState extends State<SimpleCalculator> {
-  int _currentInput = 0;
-  String _crurrentProcess = "";
+  // 当前输入的计算算式
+  String _displayProcess = "";
+
+  // 历史记录
   List<String> _calculationHistory = [];
+
+  // 当前结果
   late int _currentResult;
 
   @override
@@ -25,35 +32,43 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     super.initState();
     _calculationHistory = widget.scoreDetail;
     _currentResult = widget.score;
-    _currentInput = widget.score;
-    _crurrentProcess = widget.score.toString();
+    _displayProcess = widget.score.toString();
   }
 
   void _onNumberPressed(int number) {
     setState(() {
-      _currentInput = _currentInput * 10 + number;
-      _crurrentProcess += "$number";
+      if (_displayProcess == "0") {
+        _displayProcess = "$number";
+      } else {
+        _displayProcess += "$number";
+      }
     });
   }
 
   void _onOperationPressed(String operation) {
     setState(() {
-      if (operation == "+" || operation == "-" || operation == "÷" || operation == "×") {
-        if (_crurrentProcess.isNotEmpty && "+-×÷".contains(_crurrentProcess[_crurrentProcess.length - 1])) {
-          _crurrentProcess = _crurrentProcess.substring(0, _crurrentProcess.length - 1) + operation;
+      if (operation == "+" ||
+          operation == "-" ||
+          operation == "÷" ||
+          operation == "×") {
+        if (_displayProcess.isNotEmpty &&
+            "+-×÷".contains(_displayProcess[_displayProcess.length - 1])) {
+          _displayProcess =
+              _displayProcess.substring(0, _displayProcess.length - 1) +
+                  operation;
         } else {
-          _crurrentProcess += operation;
+          _displayProcess += operation;
         }
-        _currentInput = 0;
       } else if (operation == "=") {
         // 计算结果
-        int result = 0;
         List<String> tokens = [];
         String currentOperation = "+";
 
-
         // 将历史记录// 使用正则表达式将_crurrentProcess转化为操作数和操作符的列表
-        tokens = RegExp(r'(\d+|[+\-×÷])').allMatches(_crurrentProcess).map((e) => e.group(0)!).toList();
+        tokens = RegExp(r'(\d+|[+\-×÷])')
+            .allMatches(_displayProcess)
+            .map((e) => e.group(0)!)
+            .toList();
 
         // 使用栈处理先乘除后加减
         List<int> stack = [];
@@ -80,26 +95,62 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         }
 
         // 计算最终结果
-        result = stack.fold(0, (sum, element) => sum + element);
-
-        // 更新历史记录和回调
-
-        _calculationHistory.add("= $result");
-        if(result>=0){
-          widget.scoreDetail.add("+$result");
-        }else{
-          widget.scoreDetail.add("-$result");
+        _currentResult = stack.fold(0, (sum, element) => sum + element);
+        // 本次加数
+        int addingParam = 0;
+        if (_calculationHistory.isEmpty) {
+          addingParam = _currentResult;
+        } else if (stack.length == 1) {
+          addingParam = stack[0];
+          _currentResult += addingParam;
+        } else if (tokens[0] == '-') {
+          addingParam = _currentResult + int.parse(tokens[1]);
+        } else {
+          addingParam = _currentResult - int.parse(tokens[0]);
         }
 
-        widget.callback(result, widget.scoreDetail);
+        setState(() {
+          // 保存过程记录
+          if (addingParam >= 0) {
+            _calculationHistory.add("+$addingParam");
+          } else {
+            _calculationHistory.add("$addingParam");
+          }
+          widget.callback(_currentResult, widget.scoreDetail);
+          _displayProcess = "$_currentResult";
 
-        _currentResult = result;
-        _currentInput = 0;
-        _crurrentProcess = "$result";
-        _calculationHistory.clear();
+          widget.callback(_currentResult, _calculationHistory);
+        });
       } else if (operation == "C") {
-        _currentInput = 0;
-        _calculationHistory.clear();
+        setState(() {
+          _displayProcess = "0";
+          _currentResult = 0;
+          _calculationHistory.clear();
+          widget.callback(_currentResult, _calculationHistory);
+        });
+      } else if (operation == "↩") {
+        if (_calculationHistory.isNotEmpty) {
+          setState(() {
+            _currentResult =
+                _currentResult - int.parse(_calculationHistory.last);
+            _displayProcess = _currentResult.toString();
+            _calculationHistory.removeLast();
+            widget.callback(_currentResult, _calculationHistory);
+          });
+        }
+      } else if (operation == "AC") {
+        if (_displayProcess != _currentResult.toString()) {
+          setState(() {
+            if (_displayProcess.length == 1 ||
+                (_displayProcess.length == 1 &&
+                    _displayProcess.contains("-"))) {
+              _displayProcess = "0";
+            } else {
+              _displayProcess =
+                  _displayProcess.substring(0, _displayProcess.length - 1);
+            }
+          });
+        }
       }
     });
   }
@@ -144,7 +195,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   ),
                 ),
                 Text(
-                  _crurrentProcess,
+                  _displayProcess,
                   style: GoogleFonts.pressStart2p(
                       fontSize: 30.sp, color: Colors.black87),
                   textAlign: TextAlign.right,
@@ -185,9 +236,10 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     case 0:
                       return _buildButton("C", () => _onOperationPressed("C"));
                     case 1:
-                      return SizedBox.shrink();
+                      return _buildButton("↩", () => _onOperationPressed("↩"));
                     case 2:
-                      return SizedBox.shrink();
+                      return _buildButton(
+                          "AC", () => _onOperationPressed("AC"));
                     case 3:
                       return _buildButton("÷", () => _onOperationPressed("÷"));
                     case 4:
@@ -236,18 +288,20 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   Widget _buildButton(String label, VoidCallback onPressed) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.w),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xffb44f33),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.r),
+            borderRadius: BorderRadius.circular(20.r),
           ),
         ),
         onPressed: onPressed,
         child: Text(label,
             style: GoogleFonts.pressStart2p(
-                fontSize: 28.sp, color: const Color(0xfff5ddaf))),
+                letterSpacing: -8.0.w,
+                fontSize: 28.sp,
+                color: const Color(0xfff5ddaf))),
       ),
     );
   }

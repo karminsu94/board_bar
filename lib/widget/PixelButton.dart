@@ -8,7 +8,12 @@ class PixelButton extends StatelessWidget {
   final double? fontSize;
   final Function onTap;
 
-  const PixelButton({super.key, required this.title, required this.width, required this.onTap, this.fontSize});
+  const PixelButton(
+      {super.key,
+      required this.title,
+      required this.width,
+      required this.onTap,
+      this.fontSize});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,6 @@ class PixelButton extends StatelessWidget {
           border: Border.all(color: const Color(0xff1e3b43), width: 10.w),
         ),
         child: Center(
-
           child: Text(title,
               textAlign: TextAlign.center,
               style: GoogleFonts.pressStart2p(
